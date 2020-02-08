@@ -6,13 +6,14 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private val questions = arrayListOf<Question>(
-        Question("Test question 1"),
-        Question(("Test question 2"))
+        Question("This statement is false", false),
+        Question(("This statement is true"), true)
     )
     private val questionAdapter = QuestionAdapter(questions)
 
@@ -45,7 +46,13 @@ class MainActivity : AppCompatActivity() {
             // Callback triggered when a user swiped an item.
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                 val position = viewHolder.adapterPosition
-                questions.removeAt(position)
+                if (((direction == ItemTouchHelper.RIGHT) and (questions[position].rightAnswer)) ||
+                 ((direction == ItemTouchHelper.LEFT) and (!questions[position].rightAnswer))){
+                    questions.removeAt(position)
+                } else {
+                    Snackbar.make(constraintLayout, "The question won't be removed", Snackbar.LENGTH_SHORT).show()
+                }
+
                 questionAdapter.notifyDataSetChanged()
             }
         }
